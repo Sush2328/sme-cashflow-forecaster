@@ -22,14 +22,8 @@ st.markdown("""
   .runway-warning .runway-n { color: #b45309; }
   .runway-safe .runway-n { color: #2d7d6f; }
   .runway-label { font-size: 13px; color: #3a3a38; font-weight: 400; margin-top: 6px; }
-  .cfo-box { background: #0e0e0d; color: #f7f4ee; padding: 28px 32px; border-radius: 4px; margin: 20px 0; }
-  .cfo-box h3 { font-family: 'Instrument Serif', serif; font-size: 1.4rem; color: #f7f4ee; margin-bottom: 16px; }
-  .cfo-item { font-size: 14px; color: rgba(247,244,238,0.7); line-height: 1.7; padding: 8px 0; border-bottom: 1px solid rgba(247,244,238,0.08); display: flex; gap: 10px; }
-  .cfo-item:last-child { border-bottom: none; }
-  .systems-box { background: #f5ebe7; border-left: 3px solid #c13b20; padding: 24px 28px; border-radius: 0 4px 4px 0; margin: 20px 0; }
-  .systems-box h3 { font-family: 'Instrument Serif', serif; font-size: 1.3rem; color: #0e0e0d; margin-bottom: 12px; }
-  .systems-item { font-size: 14px; color: #3a3a38; line-height: 1.7; padding: 6px 0; display: flex; gap: 10px; }
   .result-section { background: #f7f4ee; border-left: 3px solid #c13b20; padding: 28px 32px; border-radius: 0 4px 4px 0; margin: 20px 0; line-height: 1.8; }
+  .share-box { background: #f5ebe7; border-left: 3px solid #c13b20; padding: 16px 20px; border-radius: 0 4px 4px 0; margin-top: 16px; }
   .footer-line { font-size: 14px; font-style: italic; color: #3a3a38; text-align: center; padding: 16px; border-top: 1px solid rgba(14,14,13,0.1); margin-top: 32px; }
 </style>
 """, unsafe_allow_html=True)
@@ -41,7 +35,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# INPUT MODE
 input_mode = st.radio(
     "How would you like to enter your data?",
     ["Enter numbers manually", "Upload a CSV file"],
@@ -131,7 +124,6 @@ else:
         }
     }
 
-    # RUNWAY BANNER — immediate, before they click anything
     if total_expenses > 0:
         if monthly_net < 0:
             runway_days = int((current_balance / abs(monthly_net)) * 30)
@@ -225,7 +217,7 @@ Total transactions analysed: {len(df)}
                     "net": round(net),
                     "balance": round(bal)
                 })
-        except:
+        except Exception:
             st.error("Could not process the CSV. Please check the format.")
             st.stop()
     else:
@@ -234,7 +226,6 @@ Total transactions analysed: {len(df)}
 
     with st.spinner("Running your cash reality check..."):
 
-        # CHART
         st.markdown("### 90-Day Cash Position")
         chart_data = pd.DataFrame([
             {"Period": "Now", "Balance": current_balance},
@@ -259,7 +250,6 @@ Total transactions analysed: {len(df)}
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        # MONTH BREAKDOWN
         st.markdown("### Month by Month")
         cols = st.columns(3)
         for i, m in enumerate(months):
@@ -268,7 +258,8 @@ Total transactions analysed: {len(df)}
                 st.metric("Expenses", f"{currency} {m['expenses']:,}")
                 st.metric("Closing Balance", f"{currency} {m['balance']:,}")
 
-        # AI ANALYSIS
+        st.markdown("### CFO Analysis")
+
         prompt = f"""You are a blunt, experienced CFO advisor. You have seen hundreds of SME businesses fail because they ran out of visibility before they ran out of cash. You do not sugarcoat.
 
 Business data:
@@ -316,15 +307,14 @@ Be direct. Be specific. Sound like someone who has seen this exact situation bef
             report = f"Cash Reality Check\n{'='*40}\n\n{data_summary}\n\n90-Day Projection:\n{json.dumps(months, indent=2)}\n\nCFO Analysis:\n{analysis}"
             st.download_button("Download Full Report", report, "cash_reality_check.txt", "text/plain")
 
-            # SHARE CTA
             share_url = "https://sme-cashflow-forecaster.streamlit.app"
-st.markdown(f"""
-<div style='background:#f5ebe7; border-left:3px solid #c13b20; padding:16px 20px; border-radius:0 4px 4px 0; margin-top:16px;'>
-  <p style='font-size:14px; color:#3a3a38; margin-bottom:8px;'>Most cash crises are visible weeks before they happen. Most teams just do not look.</p>
-  <a href="https://www.linkedin.com/sharing/share-offsite/?url={share_url}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:#0e0e0d; color:#f7f4ee; padding:10px 20px; border-radius:3px; font-size:13px; font-weight:500; text-decoration:none; margin-right:8px;">Share on LinkedIn</a>
-  <a href="mailto:?subject=Check your cash runway&body=Run your numbers here: {share_url}" style="display:inline-flex; align-items:center; gap:8px; background:transparent; color:#0e0e0d; padding:10px 20px; border-radius:3px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid rgba(14,14,13,0.15);">Send to co-founder</a>
-</div>
-""", unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="share-box">
+              <p style='font-size:14px; color:#3a3a38; margin-bottom:12px;'>Most cash crises are visible weeks before they happen. Most teams just do not look.</p>
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url={share_url}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#0e0e0d;color:#f7f4ee;padding:10px 20px;border-radius:3px;font-size:13px;font-weight:500;text-decoration:none;margin-right:8px;">Share on LinkedIn</a>
+              <a href="mailto:?subject=Check your cash runway&body=Run your numbers here: {share_url}" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:#0e0e0d;padding:10px 20px;border-radius:3px;font-size:13px;font-weight:500;text-decoration:none;border:1px solid rgba(14,14,13,0.15);">Send to co-founder</a>
+            </div>
+            """, unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"Error: {e}")
