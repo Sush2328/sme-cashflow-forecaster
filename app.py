@@ -317,7 +317,14 @@ Be direct. Be specific. Sound like someone who has seen this exact situation bef
             st.download_button("Download Full Report", report, "cash_reality_check.txt", "text/plain")
 
             # SHARE CTA
-            st.info("Send this to your co-founder or finance lead. Most cash crises are visible weeks before they happen. Most teams just do not look.")
+            share_url = "https://sme-cashflow-forecaster.streamlit.app"
+st.markdown(f"""
+<div style='background:#f5ebe7; border-left:3px solid #c13b20; padding:16px 20px; border-radius:0 4px 4px 0; margin-top:16px;'>
+  <p style='font-size:14px; color:#3a3a38; margin-bottom:8px;'>Most cash crises are visible weeks before they happen. Most teams just do not look.</p>
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url={share_url}" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:#0e0e0d; color:#f7f4ee; padding:10px 20px; border-radius:3px; font-size:13px; font-weight:500; text-decoration:none; margin-right:8px;">Share on LinkedIn</a>
+  <a href="mailto:?subject=Check your cash runway&body=Run your numbers here: {share_url}" style="display:inline-flex; align-items:center; gap:8px; background:transparent; color:#0e0e0d; padding:10px 20px; border-radius:3px; font-size:13px; font-weight:500; text-decoration:none; border:1px solid rgba(14,14,13,0.15);">Send to co-founder</a>
+</div>
+""", unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"Error: {e}")
